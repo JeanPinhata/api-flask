@@ -1,0 +1,5 @@
+Flask
+gunicorn
+joblib
+pandas
+scikit-learn # Adicione se seu modelo usa sklearn

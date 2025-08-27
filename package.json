@@ -1,0 +1,6 @@
+gunicorn app:app # Para uma aplicação Flask onde sua instância Flask é chamada 'app' no arquivo 'app.py'
+# ou
+gunicorn myproject.wsgi:application # Para Django
+"scripts": {
+  "start": "node server.js"
+}

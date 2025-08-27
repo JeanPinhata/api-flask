@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recomendador de Políticas Públicas para Artistas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --accent-color: #28a745;
+            --light-bg: #f8f9fa;
+            --dark-blue: #0056b3;
+            --text-color: #343a40;
+            --light-gray: #e9ecef;
+            --danger-color: #dc3545;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif; /* Fonte geral */
+            margin: 0;
+            /* IMAGEM DE FUNDO - AQUI */
+            background-image: url('{{ url_for('static', filename='Capinhas Personalizada.jpg') }}');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+            padding-bottom: 120px; /* ADICIONADO PARA DAR ESPAÇO À BORDA INFERIOR */
+        }
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif; /* Fonte para títulos */
+            color: var(--dark-blue);
+        }
+        .navbar {
+            background-color: var(--dark-blue); /* Cor da barra de navegação */
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+            margin-bottom: 20px;
+        }
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            letter-spacing: 0.5px;
+        }
+        .navbar-logo {
+            height: 60px; /* Ajuste o tamanho da sua logo aqui */
+            width: auto;
+            border-radius: 8px; /* Opcional: para logos com cantos arredondados */
+            animation: fadeIn 1s ease-out; /* Animação de entrada da logo */
+        }
+        .container {
+            max-width: 960px; /* Largura um pouco maior */
+            margin: 30px auto;
+            background: rgba(255, 255, 255, 0.9); /* Fundo branco com transparência para melhor leitura */
+            padding: 45px;
+            border-radius: 15px; /* Cantos mais arredondados */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); /* Sombra mais pronunciada e suave */
+            flex-grow: 1; /* Permite que o container se expanda */
+        }
+        p {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            color: #555;
+        }
+        .form-select, .form-control {
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 1rem;
+            border: 1px solid var(--light-gray);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-select:focus, .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+        }
+        .form-check-label {
+            margin-left: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        .form-check-input:checked + .form-check-label {
+            font-weight: bold;
+            color: var(--dark-blue);
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 15px 30px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,123,255,0.2);
+            display: flex; /* Para alinhar o ícone e texto */
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-primary:hover {
+            background-color: var(--dark-blue);
+            border-color: var(--dark-blue);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,123,255,0.3);
+        }
+        .btn-primary:disabled {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        #recommendations {
+            margin-top: 50px;
+            border-top: 1px solid var(--light-gray);
+            padding-top: 35px;
+            animation: fadeIn 1.5s ease-out; /* Animação para a seção de recomendações */
+        }
+        #recommendationList {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        #recommendationList li {
+            background: var(--light-bg);
+            margin-bottom: 15px;
+            padding: 18px;
+            border-left: 8px solid var(--primary-color);
+            border-radius: 10px;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: flex-start;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease;
+            animation: slideInFromLeft 0.6s ease-out forwards; /* Animação para cada item */
+            opacity: 0; /* Começa invisível para a animação */
+        }
+        #recommendationList li:nth-child(even) { /* Estilo alternado para itens */
+            border-left-color: var(--accent-color);
+        }
+        #recommendationList li i {
+            margin-right: 12px;
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            margin-top: 2px;
+        }
+        #recommendationList li:nth-child(even) i {
+            color: var(--accent-color);
+        }
+        .error {
+            color: var(--danger-color);
+            background-color: #fcebeb; /* Mais suave que f8d7da */
+            border: 1px solid #f5c6cb;
+            padding: 18px;
+            border-radius: 10px;
+            margin-top: 25px;
+            text-align: center;
+            font-weight: bold;
+            animation: shake 0.5s; /* Animação de erro */
+        }
+        .loading-spinner {
+            display: none; /* Escondido por padrão */
+            margin: 20px auto;
+            border: 4px solid var(--light-gray);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        .loading-text {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            color: var(--secondary-color);
+        }
+        footer {
+            text-align: center;
+            padding: 25px;
+            margin-top: auto;
+            color: #777;
+            font-size: 0.95rem;
+            background-color: var(--light-bg);
+            border-top: 1px solid var(--light-gray);
+        }
+
+        /* BORDA INFERIOR EM EVIDÊNCIA - AQUI */
+        .bottom-border {
+            background-image: url('{{ url_for('static', filename='image (5).png') }}');
+            background-repeat: repeat-x; /* Repete a imagem horizontalmente */
+            height: 100px; /* Ajuste a altura da borda conforme necessário */
+            width: 100%;
+            position: fixed; /* Fixa a borda na parte inferior */
+            bottom: 0;
+            left: 0;
+            /* z-index: -1; <-- REMOVIDO PARA DEIXAR EM EVIDÊNCIA */
+        }
+
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideInFromLeft {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body style="background-image: url('{{ url_for('static', filename='Capinhas Personalizada.jpg') }}'); background-size: cover; background-repeat: no-repeat; background-attachment: fixed;">
+    <nav class="navbar">
+        <div class="container-fluid d-flex justify-content-center align-items-center">
+            <img src="{{ url_for('static', filename='Imagem_do_WhatsApp_de_2025-02-19_à_s__01.32.27_c49135d2-removebg-preview (1).png') }}" alt="Logo do Projeto" class="navbar-logo me-3">
+            <h1 class="mb-0">Recomendador de Políticas Públicas para Artistas</h1>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2 class="text-center">Preencha para Obter Recomendações</h2>
+        <p>Utilize o formulário abaixo para descrever o perfil de um artista e receber sugestões de políticas públicas personalizadas.</p>
+
+        <form id="recommendationForm">
+            <div class="row g-4"> <div class="col-md-6">
+                    <label for="Genero" class="form-label">Gênero:</label>
+                    <select id="Genero" name="Genero" class="form-select">
+                        <option value="Não informado">Selecione...</option>
+                        <option value="Mulher cis">Mulher cis</option>
+                        <option value="Homem cis">Homem cis</option>
+                        <option value="Mulher trans">Mulher trans</option>
+                        <option value="Homem trans">Homem trans</option>
+                        <option value="Não-binário">Não-binário</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="Raca_Cor_Etnia" class="form-label">Raça/Cor/Etnia:</label>
+                    <select id="Raca_Cor_Etnia" name="Raca_Cor_Etnia" class="form-select">
+                        <option value="Não informado">Selecione...</option>
+                        <option value="Branco(a)">Branco(a)</option>
+                        <option value="Preto(a)">Preto(a)</option>
+                        <option value="Pardo(a)">Pardo(a)</option>
+                        <option value="Amarelo(a)">Amarelo(a)</option>
+                        <option value="Indígena">Indígena</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="Nivel_Escolaridade" class="form-label">Nível de Escolaridade:</label>
+                    <select id="Nivel_Escolaridade" name="Nivel_Escolaridade" class="form-select">
+                        <option value="Não informado">Selecione...</option>
+                        <option value="Ensino fundamental incompleto">Ensino fundamental incompleto</option>
+                        <option value="Ensino fundamental completo">Ensino fundamental completo</option>
+                        <option value="Ensino médio incompleto">Ensino médio incompleto</option>
+                        <option value="Ensino médio completo">Ensino médio completo</option>
+                        <option value="Ensino superior incompleto">Ensino superior incompleto</option>
+                        <option value="Ensino superior completo">Ensino superior completo</option>
+                        <option value="Pós-graduação">Pós-graduação</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="Renda_Mensal" class="form-label">Renda Mensal Individual (média):</label>
+                    <select id="Renda_Mensal" name="Renda_Mensal" class="form-select">
+                        <option value="Não informado">Selecione...</option>
+                        <option value="Até 1 salário mínimo">Até 1 salário mínimo</option>
+                        <option value="1 a 2 salários mínimos">1 a 2 salários mínimos</option>
+                        <option value="2 a 3 salários mínimos">2 a 3 salários mínimos</option>
+                        <option value="Mais de 3 salários mínimos">Mais de 3 salários mínimos</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="Beneficiario_Programa_Social" class="form-label">Beneficiário(a) de Programa Social?</label>
+                    <select id="Beneficiario_Programa_Social" name="Beneficiario_Programa_Social" class="form-select">
+                        <option value="Não informado">Selecione...</option>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                        <option value="Nenhum">Nenhum</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="PCD" class="form-label">Você se considera PCD?</label>
+                    <select id="PCD" name="PCD" class="form-select">
+                        <option value="Não informado">Selecione...</option>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="Area_Atuacao_Artistica" class="form-label">Principal Área de Atuação Artística/Cultural:</label>
+                    <select id="Area_Atuacao_Artistica" name="Area_Atuacao_Artistica" class="form-select">
+                        <option value="Não informado">Selecione...</option>
+                        <option value="Artes visuais (pintura, escultura, desenho, fotografia)">Artes visuais (pintura, escultura, desenho, fotografia)</option>
+                        <option value="Música (canto, instrumento, composição)">Música (canto, instrumento, composição)</option>
+                        <option value="Artes cênicas (teatro, dança, circo)">Artes cênicas (teatro, dança, circo)</option>
+                        <option value="Literatura (escrita, poesia)">Literatura (escrita, poesia)</option>
+                        <option value="Audiovisual (cinema, vídeo, animação)">Audiovisual (cinema, vídeo, animação)</option>
+                        <option value="Cultura popular e tradicional (artesanato, folclore, capoeira)">Cultura popular e tradicional (artesanato, folclore, capoeira)</option>
+                        <option value="Gastronomia cultural">Gastronomia cultural</option>
+                        <option value="Produtor(a) cultural">Produtor(a) cultural</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="Atuacao_Profissional" class="form-label">Você atua como artista/agente cultural de forma:</label>
+                    <select id="Atuacao_Profissional" name="Atuacao_Profissional" class="form-select">
+                        <option value="Não informado">Selecione...</option>
+                        <option value="Amadora">Amadora</option>
+                        <option value="Profissional">Profissional</option>
+                        <option value="Estudante">Estudante</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="Dificuldade_Financeira_Eventos" class="form-label">Dificuldade financeira para participar de eventos ou atividades culturais?</label>
+                    <select id="Dificuldade_Financeira_Eventos" name="Dificuldade_Financeira_Eventos" class="form-select">
+                        <option value="Não informado">Selecione...</option>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="Comunidade_Tradicional" class="form-label">Você se considera parte de alguma comunidade tradicional?</label>
+                    <select id="Comunidade_Tradicional" name="Comunidade_Tradicional" class="form-select">
+                        <option value="Não informado">Selecione...</option>
+                        <option value="Não">Não</option>
+                        <option value="Quilombola">Quilombola</option>
+                        <option value="Indígena">Indígena</option>
+                        <option value="Povos de Terreiro">Povos de Terreiro</option>
+                        <option value="Outra">Outra</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Quais das seguintes dificuldades você encontra ao divulgar o seu trabalho por meios digitais? (Selecione todas as que se aplicam)</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Dificuldades_Divulgacao_Digital" value="Falta de conhecimento técnico em marketing digital" id="checkMarketing">
+                        <label class="form-check-label" for="checkMarketing">Falta de conhecimento técnico em marketing digital</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Dificuldades_Divulgacao_Digital" value="Dificuldade em criar conteúdo atraente para as redes sociais" id="checkConteudo">
+                        <label class="form-check-label" for="checkConteudo">Dificuldade em criar conteúdo atraente para as redes sociais</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Dificuldades_Divulgacao_Digital" value="Falta de acesso a equipamentos adequados" id="checkEquipamentos">
+                        <label class="form-check-label" for="checkEquipamentos">Falta de acesso a equipamentos adequados</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Dificuldades_Divulgacao_Digital" value="Falta de recursos financeiros para investir em publicidade online" id="checkPublicidade">
+                        <label class="form-check-label" for="checkPublicidade">Falta de recursos financeiros para investir em publicidade online</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Dificuldades_Divulgacao_Digital" value="Falta de tempo para dedicar à divulgação online" id="checkTempo">
+                        <label class="form-check-label" for="checkTempo">Falta de tempo para dedicar à divulgação online</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Dificuldades_Divulgacao_Digital" value="Dificuldade em organizar e planejar as ações de divulgação" id="checkPlanejamento">
+                        <label class="form-check-label" for="checkPlanejamento">Dificuldade em organizar e planejar as ações de divulgação</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Dificuldades_Divulgacao_Digital" value="Conexão de internet instável ou de baixa velocidade" id="checkInternet">
+                        <label class="form-check-label" for="checkInternet">Conexão de internet instável ou de baixa velocidade</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Dificuldades_Divulgacao_Digital" value="Outras" id="checkOutras">
+                        <label class="form-check-label" for="checkOutras">Outras</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Dificuldades_Divulgacao_Digital" value="Não enfrento dificuldades" id="checkSemDificuldades">
+                        <label class="form-check-label" for="checkSemDificuldades">Não enfrento dificuldades</label>
+                    </div>
+                </div>
+
+                <div class="col-12 d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary" id="submitButton"><i class="bi bi-lightbulb-fill me-2"></i> Obter Recomendações</button>
+                </div>
+            </div>
+        </form>
+
+        <div id="loadingIndicator" class="loading-spinner"></div>
+        <p id="loadingText" class="loading-text" style="display: none;">Carregando recomendações...</p>
+
+        <div id="recommendations">
+            <h2 class="text-center">Recomendações de Políticas Públicas:</h2>
+            <ul id="recommendationList">
+            </ul>
+        </div>
+        <div id="error-message" class="error" style="display: none;"></div>
+    </div>
+
+    <footer class="mt-auto">
+        <p>&copy; 2025 Recomendador de Políticas Públicas. Desenvolvido para a comunidade cultural de Ourinhos.</p>
+    </footer>
+
+    <div class="bottom-border"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        document.getElementById('recommendationForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const submitButton = document.getElementById('submitButton');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const loadingText = document.getElementById('loadingText');
+            const errorMessage = document.getElementById('error-message');
+            const recommendationList = document.getElementById('recommendationList');
+
+            // Limpa mensagens anteriores
+            errorMessage.textContent = '';
+            errorMessage.style.display = 'none';
+            recommendationList.innerHTML = '';
+            
+            // Mostra o spinner e desabilita o botão
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Processando...';
+            loadingIndicator.style.display = 'block';
+            loadingText.style.display = 'block';
+
+
+            const formData = new FormData(event.target);
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                if (key !== 'Dificuldades_Divulgacao_Digital') {
+                    data[key] = value;
+                }
+            }
+
+            const selectedDifficulties = [];
+            document.querySelectorAll('input[name="Dificuldades_Divulgacao_Digital"]:checked').forEach(checkbox => {
+                selectedDifficulties.push(checkbox.value);
+            });
+            data['Dificuldades_Divulgacao_Digital'] = selectedDifficulties;
+
+            try {
+                const response = await fetch('/recommend', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Erro ao obter recomendações do servidor.');
+                }
+
+                const result = await response.json();
+                
+                if (result.recommendations && result.recommendations.length > 0) {
+                    // Adiciona as recomendações com um pequeno atraso para efeito de animação
+                    result.recommendations.forEach((rec, index) => {
+                        setTimeout(() => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `<i class="bi bi-lightbulb-fill"></i> ${rec}`;
+                            recommendationList.appendChild(li);
+                            li.style.opacity = 1; // Torna visível após a animação
+                        }, index * 100); // Atraso de 100ms para cada item
+                    });
+                } else {
+                    const li = document.createElement('li');
+                    li.textContent = "Nenhuma política sugerida para o perfil informado.";
+                    recommendationList.appendChild(li);
+                }
+
+            } catch (error) {
+                console.error('Erro:', error);
+                errorMessage.textContent = 'Ocorreu um erro: ' + error.message;
+                errorMessage.style.display = 'block';
+            } finally {
+                // Reabilita o botão e esconde o spinner
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="bi bi-lightbulb-fill me-2"></i> Obter Recomendações';
+                loadingIndicator.style.display = 'none';
+                loadingText.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

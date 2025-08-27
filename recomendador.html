@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recomendador de Políticas Públicas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #6366f1;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 min-h-screen flex items-center justify-center">
+
+    <div class="container mx-auto bg-white p-8 rounded-xl shadow-lg">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Recomendador de Políticas Públicas</h1>
+        <p class="text-center text-gray-600 mb-8">
+            Preencha o formulário abaixo para receber recomendações personalizadas de políticas públicas baseadas no seu perfil artístico e cultural.
+        </p>
+        
+        <form id="recommendation-form" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="genero" class="block text-sm font-medium text-gray-700">Gênero</label>
+                    <select id="genero" name="Genero" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">Selecione...</option>
+                        <option value="Feminino">Feminino</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Não-binário">Não-binário</option>
+                        <option value="Prefiro não informar">Prefiro não informar</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="raca" class="block text-sm font-medium text-gray-700">Raça/cor/etnia</label>
+                    <select id="raca" name="Raca_Cor_Etnia" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">Selecione...</option>
+                        <option value="Branca">Branca</option>
+                        <option value="Preta">Preta</option>
+                        <option value="Parda">Parda</option>
+                        <option value="Amarela">Amarela</option>
+                        <option value="Indígena">Indígena</option>
+                        <option value="Outra">Outra</option>
+                        <option value="Prefiro não informar">Prefiro não informar</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="escolaridade" class="block text-sm font-medium text-gray-700">Nível de escolaridade</label>
+                <select id="escolaridade" name="Nivel_Escolaridade" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">Selecione...</option>
+                    <option value="Ensino Fundamental incompleto">Ensino Fundamental incompleto</option>
+                    <option value="Ensino Fundamental completo">Ensino Fundamental completo</option>
+                    <option value="Ensino Médio incompleto">Ensino Médio incompleto</option>
+                    <option value="Ensino Médio completo">Ensino Médio completo</option>
+                    <option value="Ensino Superior incompleto">Ensino Superior incompleto</option>
+                    <option value="Ensino Superior completo">Ensino Superior completo</option>
+                    <option value="Pós-graduação, mestrado, doutorado">Pós-graduação, mestrado, doutorado</option>
+                    <option value="Prefiro não informar">Prefiro não informar</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="renda" class="block text-sm font-medium text-gray-700">Renda mensal individual (média)</label>
+                <select id="renda" name="Renda_Mensal" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">Selecione...</option>
+                    <option value="Até 1 salário mínimo">Até 1 salário mínimo</option>
+                    <option value="De 1 a 3 salários mínimos">De 1 a 3 salários mínimos</option>
+                    <option value="De 3 a 5 salários mínimos">De 3 a 5 salários mínimos</option>
+                    <option value="Mais de 5 salários mínimos">Mais de 5 salários mínimos</option>
+                    <option value="Prefiro não informar">Prefiro não informar</option>
+                </select>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="programa_social" class="block text-sm font-medium text-gray-700">Beneficiário de programa social?</label>
+                    <select id="programa_social" name="Beneficiario_Programa_Social" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">Selecione...</option>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                        <option value="Prefiro não informar">Prefiro não informar</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="pcd" class="block text-sm font-medium text-gray-700">Você se considera PCD?</label>
+                    <select id="pcd" name="PCD" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">Selecione...</option>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                        <option value="Prefiro não informar">Prefiro não informar</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="area_atuacao" class="block text-sm font-medium text-gray-700">Principal área de atuação</label>
+                <select id="area_atuacao" name="Area_Atuacao_Artistica" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">Selecione...</option>
+                    <option value="Música">Música</option>
+                    <option value="Artes visuais (pintura, escultura, gravura, etc.)">Artes visuais (pintura, escultura, gravura, etc.)</option>
+                    <option value="Artes cênicas (teatro, dança, circo, performance)">Artes cênicas (teatro, dança, circo, performance)</option>
+                    <option value="Literatura">Literatura</option>
+                    <option value="Audiovisual (cinema, vídeo, animação)">Audiovisual (cinema, vídeo, animação)</option>
+                    <option value="Artesanato">Artesanato</option>
+                    <option value="Cultura popular (folclore, manifestações tradicionais)">Cultura popular (folclore, manifestações tradicionais)</option>
+                    <option value="Design">Design</option>
+                    <option value="Gastronomia">Gastronomia</option>
+                    <option value="Outra">Outra</option>
+                    <option value="Não informado">Não informado</option>
+                    </select>
+                </div>
+                
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="atuacao_profissional" class="block text-sm font-medium text-gray-700">Atuação profissional</label>
+                    <select id="atuacao_profissional" name="Atuacao_Profissional" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">Selecione...</option>
+                        <option value="Amadora">Amadora</option>
+                        <option value="Em transição para profissional">Em transição para profissional</option>
+                        <option value="Profissional">Profissional</option>
+                        <option value="Não informado">Não informado</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="dificuldade_financeira" class="block text-sm font-medium text-gray-700">Dificuldade para eventos culturais?</label>
+                    <select id="dificuldade_financeira" name="Dificuldade_Financeira_Eventos" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">Selecione...</option>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                        <option value="Não se aplica">Não se aplica</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div>
+                <label for="dificuldades_digitais" class="block text-sm font-medium text-gray-700">Dificuldades para divulgar o trabalho digitalmente</label>
+                <p class="text-sm text-gray-500">Selecione uma ou mais opções.</p>
+                <select id="dificuldades_digitais" name="Dificuldades_Divulgacao_Digital" multiple required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-32">
+                    <option value="Falta de conhecimento técnico em marketing digital">Falta de conhecimento técnico em marketing digital</option>
+                    <option value="Dificuldade em criar conteúdo atraente para as redes sociais">Dificuldade em criar conteúdo atraente para as redes sociais</option>
+                    <option value="Falta de recursos financeiros para investir em publicidade online">Falta de recursos financeiros para investir em publicidade online</option>
+                    <option value="Falta de tempo para dedicar à divulgação online">Falta de tempo para dedicar à divulgação online</option>
+                    <option value="Dificuldade em organizar e planejar as ações de divulgação">Dificuldade em organizar e planejar as ações de divulgação</option>
+                    <option value="Falta de acesso a equipamentos adequados">Falta de acesso a equipamentos adequados</option>
+                    <option value="Conexão de internet instável ou de baixa velocidade">Conexão de internet instável ou de baixa velocidade</option>
+                    <option value="Outra dificuldade">Outra dificuldade</option>
+                    <option value="Não tenho dificuldades">Não tenho dificuldades</option>
+                    <option value="Não se aplica">Não se aplica</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="comunidade_tradicional" class="block text-sm font-medium text-gray-700">Você se considera parte de alguma comunidade tradicional?</label>
+                <select id="comunidade_tradicional" name="Comunidade_Tradicional" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">Selecione...</option>
+                    <option value="Não">Não</option>
+                    <option value="Indígena">Indígena</option>
+                    <option value="Quilombola">Quilombola</option>
+                    <option value="Povos de Terreiro">Povos de Terreiro</option>
+                    <option value="Outra">Outra</option>
+                    <option value="Não informado">Não informado</option>
+                </select>
+            </div>
+            
+            <div>
+                <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Obter Recomendações
+                </button>
+            </div>
+        </form>
+
+        <div id="status-message" class="mt-6 text-center hidden">
+            <div id="loading-spinner" class="loading-spinner mx-auto mb-4 hidden"></div>
+            <p id="message-text" class="text-gray-600"></p>
+        </div>
+
+        <div id="results" class="mt-8 hidden">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Recomendações de Políticas Públicas</h2>
+            <div id="recommendation-list" class="space-y-4">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('recommendation-form');
+        const spinner = document.getElementById('loading-spinner');
+        const messageDiv = document.getElementById('status-message');
+        const messageText = document.getElementById('message-text');
+        const resultsDiv = document.getElementById('results');
+        const recommendationList = document.getElementById('recommendation-list');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Ocultar resultados anteriores e exibir spinner
+            resultsDiv.classList.add('hidden');
+            messageDiv.classList.remove('hidden');
+            spinner.classList.remove('hidden');
+            messageText.textContent = 'Analisando seu perfil...';
+
+            const formData = new FormData(form);
+            const data = {};
+            // Lidar com seleções múltiplas de forma correta
+            const dificuldadesDigitais = Array.from(document.getElementById('dificuldades_digitais').options)
+                                                .filter(option => option.selected)
+                                                .map(option => option.value)
+                                                .join(', ');
+            
+            data['Dificuldades_Divulgacao_Digital'] = dificuldadesDigitais || 'Não informado';
+
+            formData.forEach((value, key) => {
+                if (key !== 'Dificuldades_Divulgacao_Digital') {
+                    data[key] = value;
+                }
+            });
+
+            // URL do seu servidor local
+            const api_url = 'http://127.0.0.1:5000/predict';
+
+            fetch(api_url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || 'Erro interno do servidor'); });
+                }
+                return response.json();
+            })
+            .then(result => {
+                // Ocultar spinner e exibir resultados
+                spinner.classList.add('hidden');
+                messageDiv.classList.add('hidden');
+                resultsDiv.classList.remove('hidden');
+
+                recommendationList.innerHTML = '';
+                if (result.politicas_sugeridas && result.politicas_sugeridas.length > 0) {
+                    result.politicas_sugeridas.forEach(rec => {
+                        const recItem = document.createElement('div');
+                        recItem.className = 'bg-gray-50 p-4 rounded-lg shadow-sm';
+                        recItem.textContent = rec;
+                        recommendationList.appendChild(recItem);
+                    });
+                } else {
+                    recommendationList.innerHTML = '<p class="text-gray-500">Nenhuma recomendação encontrada para o seu perfil. Tente novamente.</p>';
+                }
+            })
+            .catch(error => {
+                // Ocultar spinner e exibir erro
+                spinner.classList.add('hidden');
+                messageDiv.classList.remove('hidden');
+                messageText.textContent = `Erro: ${error.message}`;
+                console.error('Erro:', error);
+            });
+        });
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recomendador de Políticas Públicas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #6366f1;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 min-h-screen flex items-center justify-center">
+
+    <div class="container mx-auto bg-white p-8 rounded-xl shadow-lg">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Recomendador de Políticas Públicas</h1>
+        <p class="text-center text-gray-600 mb-8">
+            Preencha o formulário abaixo para receber recomendações personalizadas de políticas públicas baseadas no seu perfil artístico e cultural.
+        </p>
+        
+        <form id="recommendation-form" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="genero" class="block text-sm font-medium text-gray-700">Gênero</label>
+                    <select id="genero" name="Genero" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">Selecione...</option>
+                        <option value="Feminino">Feminino</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Não-binário">Não-binário</option>
+                        <option value="Prefiro não informar">Prefiro não informar</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="raca" class="block text-sm font-medium text-gray-700">Raça/cor/etnia</label>
+                    <select id="raca" name="Raca_Cor_Etnia" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">Selecione...</option>
+                        <option value="Branca">Branca</option>
+                        <option value="Preta">Preta</option>
+                        <option value="Parda">Parda</option>
+                        <option value="Amarela">Amarela</option>
+                        <option value="Indígena">Indígena</option>
+                        <option value="Outra">Outra</option>
+                        <option value="Prefiro não informar">Prefiro não informar</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="escolaridade" class="block text-sm font-medium text-gray-700">Nível de escolaridade</label>
+                <select id="escolaridade" name="Nivel_Escolaridade" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">Selecione...</option>
+                    <option value="Ensino Fundamental incompleto">Ensino Fundamental incompleto</option>
+                    <option value="Ensino Fundamental completo">Ensino Fundamental completo</option>
+                    <option value="Ensino Médio incompleto">Ensino Médio incompleto</option>
+                    <option value="Ensino Médio completo">Ensino Médio completo</option>
+                    <option value="Ensino Superior incompleto">Ensino Superior incompleto</option>
+                    <option value="Ensino Superior completo">Ensino Superior completo</option>
+                    <option value="Pós-graduação, mestrado, doutorado">Pós-graduação, mestrado, doutorado</option>
+                    <option value="Prefiro não informar">Prefiro não informar</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="renda" class="block text-sm font-medium text-gray-700">Renda mensal individual (média)</label>
+                <select id="renda" name="Renda_Mensal" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">Selecione...</option>
+                    <option value="Até 1 salário mínimo">Até 1 salário mínimo</option>
+                    <option value="De 1 a 3 salários mínimos">De 1 a 3 salários mínimos</option>
+                    <option value="De 3 a 5 salários mínimos">De 3 a 5 salários mínimos</option>
+                    <option value="Mais de 5 salários mínimos">Mais de 5 salários mínimos</option>
+                    <option value="Prefiro não informar">Prefiro não informar</option>
+                </select>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="programa_social" class="block text-sm font-medium text-gray-700">Beneficiário de programa social?</label>
+                    <select id="programa_social" name="Beneficiario_Programa_Social" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">Selecione...</option>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                        <option value="Prefiro não informar">Prefiro não informar</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="pcd" class="block text-sm font-medium text-gray-700">Você se considera PCD?</label>
+                    <select id="pcd" name="PCD" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">Selecione...</option>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                        <option value="Prefiro não informar">Prefiro não informar</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="area_atuacao" class="block text-sm font-medium text-gray-700">Principal área de atuação</label>
+                <select id="area_atuacao" name="Area_Atuacao_Artistica" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">Selecione...</option>
+                    <option value="Música">Música</option>
+                    <option value="Artes visuais (pintura, escultura, gravura, etc.)">Artes visuais (pintura, escultura, gravura, etc.)</option>
+                    <option value="Artes cênicas (teatro, dança, circo, performance)">Artes cênicas (teatro, dança, circo, performance)</option>
+                    <option value="Literatura">Literatura</option>
+                    <option value="Audiovisual (cinema, vídeo, animação)">Audiovisual (cinema, vídeo, animação)</option>
+                    <option value="Artesanato">Artesanato</option>
+                    <option value="Cultura popular (folclore, manifestações tradicionais)">Cultura popular (folclore, manifestações tradicionais)</option>
+                    <option value="Design">Design</option>
+                    <option value="Gastronomia">Gastronomia</option>
+                    <option value="Outra">Outra</option>
+                    <option value="Não informado">Não informado</option>
+                </select>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="atuacao_profissional" class="block text-sm font-medium text-gray-700">Atuação profissional</label>
+                    <select id="atuacao_profissional" name="Atuacao_Profissional" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">Selecione...</option>
+                        <option value="Amadora">Amadora</option>
+                        <option value="Em transição para profissional">Em transição para profissional</option>
+                        <option value="Profissional">Profissional</option>
+                        <option value="Não informado">Não informado</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="dificuldade_financeira" class="block text-sm font-medium text-gray-700">Dificuldade para eventos culturais?</label>
+                    <select id="dificuldade_financeira" name="Dificuldade_Financeira_Eventos" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">Selecione...</option>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                        <option value="Não se aplica">Não se aplica</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div>
+                <label for="dificuldades_digitais" class="block text-sm font-medium text-gray-700">Dificuldades para divulgar o trabalho digitalmente</label>
+                <p class="text-sm text-gray-500">Selecione uma ou mais opções.</p>
+                <select id="dificuldades_digitais" name="Dificuldades_Divulgacao_Digital" multiple required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-32">
+                    <option value="Falta de conhecimento técnico em marketing digital">Falta de conhecimento técnico em marketing digital</option>
+                    <option value="Dificuldade em criar conteúdo atraente para as redes sociais">Dificuldade em criar conteúdo atraente para as redes sociais</option>
+                    <option value="Falta de recursos financeiros para investir em publicidade online">Falta de recursos financeiros para investir em publicidade online</option>
+                    <option value="Falta de tempo para dedicar à divulgação online">Falta de tempo para dedicar à divulgação online</option>
+                    <option value="Dificuldade em organizar e planejar as ações de divulgação">Dificuldade em organizar e planejar as ações de divulgação</option>
+                    <option value="Falta de acesso a equipamentos adequados">Falta de acesso a equipamentos adequados</option>
+                    <option value="Conexão de internet instável ou de baixa velocidade">Conexão de internet instável ou de baixa velocidade</option>
+                    <option value="Outra dificuldade">Outra dificuldade</option>
+                    <option value="Não tenho dificuldades">Não tenho dificuldades</option>
+                    <option value="Não se aplica">Não se aplica</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="comunidade_tradicional" class="block text-sm font-medium text-gray-700">Você se considera parte de alguma comunidade tradicional?</label>
+                <select id="comunidade_tradicional" name="Comunidade_Tradicional" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">Selecione...</option>
+                    <option value="Não">Não</option>
+                    <option value="Indígena">Indígena</option>
+                    <option value="Quilombola">Quilombola</option>
+                    <option value="Povos de Terreiro">Povos de Terreiro</option>
+                    <option value="Outra">Outra</option>
+                    <option value="Não informado">Não informado</option>
+                </select>
+            </div>
+            
+            <div>
+                <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Obter Recomendações
+                </button>
+            </div>
+        </form>
+
+        <div id="status-message" class="mt-6 text-center hidden">
+            <div id="loading-spinner" class="loading-spinner mx-auto mb-4 hidden"></div>
+            <p id="message-text" class="text-gray-600"></p>
+        </div>
+
+        <div id="results" class="mt-8 hidden">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Recomendações de Políticas Públicas</h2>
+            <div id="recommendation-list" class="space-y-4">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('recommendation-form');
+        const spinner = document.getElementById('loading-spinner');
+        const messageDiv = document.getElementById('status-message');
+        const messageText = document.getElementById('message-text');
+        const resultsDiv = document.getElementById('results');
+        const recommendationList = document.getElementById('recommendation-list');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Ocultar resultados anteriores e exibir spinner
+            resultsDiv.classList.add('hidden');
+            messageDiv.classList.remove('hidden');
+            spinner.classList.remove('hidden');
+            messageText.textContent = 'Analisando seu perfil...';
+
+            const formData = new FormData(form);
+            const data = {};
+            // Lidar com seleções múltiplas de forma correta
+            const dificuldadesDigitais = Array.from(document.getElementById('dificuldades_digitais').options)
+                                                .filter(option => option.selected)
+                                                .map(option => option.value)
+                                                .join(', ');
+            
+            data['Dificuldades_Divulgacao_Digital'] = dificuldadesDigitais || 'Não informado';
+
+            formData.forEach((value, key) => {
+                if (key !== 'Dificuldades_Divulgacao_Digital') {
+                    data[key] = value;
+                }
+            });
+
+            // Substitua esta URL pela URL gerada pelo ngrok
+            const api_url = 'https://SEU_CODIGO_ALEATORIO.ngrok-free.app/predict';
+
+            fetch(api_url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || 'Erro interno do servidor'); });
+                }
+                return response.json();
+            })
+            .then(result => {
+                // Ocultar spinner e exibir resultados
+                spinner.classList.add('hidden');
+                messageDiv.classList.add('hidden');
+                resultsDiv.classList.remove('hidden');
+
+                recommendationList.innerHTML = '';
+                if (result.politicas_sugeridas && result.politicas_sugeridas.length > 0) {
+                    result.politicas_sugeridas.forEach(rec => {
+                        const recItem = document.createElement('div');
+                        recItem.className = 'bg-gray-50 p-4 rounded-lg shadow-sm';
+                        recItem.textContent = rec;
+                        recommendationList.appendChild(recItem);
+                    });
+                } else {
+                    recommendationList.innerHTML = '<p class="text-gray-500">Nenhuma recomendação encontrada para o seu perfil. Tente novamente.</p>';
+                }
+            })
+            .catch(error => {
+                // Ocultar spinner e exibir erro
+                spinner.classList.add('hidden');
+                messageDiv.classList.remove('hidden');
+                messageText.textContent = `Erro: ${error.message}`;
+                console.error('Erro:', error);
+            });
+        });
+    </script>
+</body>
+</html>
